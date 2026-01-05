@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDR Solutions - Premium Shipping Calculator</title>
+    <style>
+        /* --- GLOBAL PREMIUM STYLES --- */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            padding: 40px 20px; 
+        }
+        .card { 
+            background: white; 
+            padding: 45px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08); 
+            width: 100%; 
+            max-width: 850px; 
+            border: 1px solid #ffffff;
+        }
+
+        /* --- 🔥 PREMIUM HEADER (Logo + Text) 🔥 --- */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f3f5;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-img {
+            height: 55px; /* Logo Size */
+            width: auto;
+            object-fit: contain;
+        }
+        .brand-text h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800; /* Extra Bold for Premium feel */
+            letter-spacing: -0.5px;
+            /* Premium Gradient Text */
+            background: -webkit-linear-gradient(45deg, #1a237e, #0d47a1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+        .brand-text p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .contact-details {
+            text-align: right;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .contact-details strong { color: #333; font-weight: 700; }
+
+        /* --- SECTION TITLES --- */
+        h3 {
+            font-size: 14px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        /* --- INPUT FIELDS --- */
+        .grid-row { display: flex; gap: 20px; margin-bottom: 25px; }
+        .grid-col { flex: 1; position: relative; }
+        
+        label { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 8px; display: block; }
+        
+        input[type="text"], input[type="number"] { 
+            width: 100%; padding: 12px 15px; 
+            border: 1px solid #e1e4e8; border-radius: 8px; 
+            font-size: 15px; height: 48px; box-sizing: border-box; 
+            background: #f9fafb; transition: 0.2s;
+            font-weight: 500;
+        }
+        input:focus { 
+            border-color: #2962ff; background: #fff; 
+            box-shadow: 0 0 0 3px rgba(41, 98, 255, 0.1); 
+            outline: none; 
+        }
+
+        /* --- STATUS DOTS & MESSAGES --- */
+        .status-indicator { position: absolute; right: 15px; top: 48px; width: 10px; height: 10px; border-radius: 50%; display: none; }
+        .status-green { background-color: #00c853; display: block; box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1); }
+        .status-red { background-color: #ff1744; display: block; }
+        .status-loading { background-color: #ff9100; display: block; animation: blink 1s infinite; }
+        
+        .input-error { border-color: #ff1744 !important; background-color: #fff5f5 !important; }
+        .input-success { border-color: #00c853 !important; }
+        .msg-text { font-size: 12px; margin-top: 6px; display: none; font-weight: 600; }
+        .err-msg { color: #d50000; }
+        .success-msg { color: #00c853; }
+
+        /* --- WEIGHT TABLE --- */
+        .dim-box { display: flex; gap: 10px; }
+        .dim-box input { text-align: center; }
+        
+        .weight-card {
+            background: #f8f9fa; border: 1px solid #eaecf0;
+            border-radius: 8px; padding: 20px; margin-top: 20px;
+        }
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table td { padding: 8px 0; font-size: 14px; color: #444; border-bottom: 1px solid #eee; }
+        .info-table tr:last-child td { border-bottom: none; }
+        .text-right { text-align: right; font-weight: 600; color: #333; font-variant-numeric: tabular-nums; }
+        .charged-row td { color: #2962ff; font-weight: 700; font-size: 16px; border-top: 2px solid #e0e0e0; }
+
+        /* --- BUTTONS --- */
+        .btn-calc { 
+            width: 100%; background: linear-gradient(135deg, #2962ff, #1565c0); 
+            color: white; padding: 16px; border: none; border-radius: 8px; 
+            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 30px; 
+            transition: transform 0.2s; box-shadow: 0 4px 12px rgba(41, 98, 255, 0.25); 
+        }
+        .btn-calc:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(41, 98, 255, 0.35); }
+        .btn-calc:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* --- RESULT BOX --- */
+        #result-box { margin-top: 35px; border-top: 2px dashed #e0e0e0; padding-top: 25px; display: none; }
+        .res-table { width: 100%; }
+        .res-table td { padding: 10px 5px; font-size: 15px; color: #555; }
+        .res-table .value-col { text-align: right; font-weight: 700; color: #222; font-variant-numeric: tabular-nums; }
+        
+        .final-amount-box { margin-top: 25px; text-align: center; background: #e8f5e9; padding: 20px; border-radius: 12px; border: 1px solid #c8e6c9; }
+        .final-amount { font-size: 38px; font-weight: 800; color: #2e7d32; display: block; margin-bottom: 5px; }
+        .final-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+        /* --- BOOK BUTTON --- */
+        .btn-book {
+            display: none; width: 100%; background-color: #2e7d32; color: white;
+            padding: 16px; text-align: center; text-decoration: none; border-radius: 8px;
+            font-size: 18px; font-weight: 700; margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3); transition: 0.2s;
+        }
+        .btn-book:hover { background-color: #1b5e20; }
+
+        /* Footer */
+        .brand-footer { margin-top: 40px; text-align: center; font-size: 13px; color: #999; }
+        
+        /* Helper */
+        #cod-box-wrapper { display: none; margin-top: 15px; }
+        .radio-group { display: flex; gap: 25px; margin-top: 10px; }
+        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; }
+
+        /* 🔥 WHATSAPP CHAT NOW BUTTON 🔥 */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            color: white;
+            border-radius: 50px; /* Pill Shape */
+            padding: 12px 25px 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .whatsapp-float:hover {
+            transform: translateY(-3px);
+            background-color: #20bd5a;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+        }
+        .whatsapp-icon {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+        .whatsapp-text {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    
+    <div class="header-container">
+        <div class="brand-section">
+            <img src="/logo.png" alt="IDR" class="logo-img" onerror="this.style.display='none'">
+            <div class="brand-text">
+                <h1>IDR Solutions</h1>
+                <p>Courier & Cargo Services</p>
+            </div>
+        </div>
+        <div class="contact-details">
+            <strong>📞 Help:</strong> +91 8770305103<br>
+            <strong>📧 Email:</strong> idrsolutionsidr@gmail.com
+        </div>
+    </div>
+
+    <h3>Rate Calculator</h3>
+
+    <div class="grid-row">
+        <div class="grid-col">
+            <label>Pickup Pincode</label>
+            <input type="text" id="p_pin" placeholder="e.g. 452001" maxlength="6" oninput="handlePickupInput()">
+            <div id="p_pin_dot" class="status-indicator"></div>
+            <div id="p_pin_msg" class="msg-text"></div>
+        </div>
+        <div class="grid-col">
+            <label>Delivery Pincode</label>
+            <input type="text" id="d_pin" placeholder="e.g. 110001" maxlength="6" oninput="validatePin('d_pin', 'delivery')">
+            <div id="d_pin_dot" class="status-indicator"></div>
+            <div id="d_pin_msg" class="msg-text"></div>
+        </div>
+    </div>
+
+    <div class="grid-row">
+        <div class="grid-col">
+            <label>Actual Weight (Grams)</label>
+            <input type="number" id="weight" value="500" oninput="calculateVolumetric()">
+        </div>
+    </div>
+    <label>Dimensions (CM)</label>
+    <div class="dim-box">
+        <input type="number" id="len" value="10" placeholder="L" oninput="calculateVolumetric()">
+        <input type="number" id="wid" value="10" placeholder="W" oninput="calculateVolumetric()">
+        <input type="number" id="ht" value="10" placeholder="H" oninput="calculateVolumetric()">
+    </div>
+
+    <div id="vol-info" class="weight-card">
+        <table class="info-table">
+            <tr><td>Dead Weight</td><td class="text-right"><span id="act_weight_disp">500</span>g</td></tr>
+            <tr><td>Volumetric Weight <small style="color:#999">(L*W*H / 5000)</small></td><td class="text-right"><span id="v_weight_disp">200</span>g</td></tr>
+            <tr class="charged-row"><td>Charged Weight</td><td class="text-right"><span id="final_weight_disp">500</span>g</td></tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <label>Payment Mode</label>
+        <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="payMode" value="Prepaid" checked onchange="toggleCod()"> Prepaid</label>
+            <label class="radio-label"><input type="radio" name="payMode" value="COD" onchange="toggleCod()"> Cash on Delivery (COD)</label>
+        </div>
+    </div>
+    <div id="cod-box-wrapper"><label style="color:#2962ff;">Collect COD Amount (₹)</label><input type="number" id="codAmount" placeholder="Invoice Value"></div>
+
+    <button class="btn-calc" id="calcBtn" onclick="getRates()">Calculate Rate</button>
+
+    <div id="result-box">
+        <table class="res-table">
+            <tr><td>Basic Freight</td><td class="value-col">₹<span id="r_freight">0.00</span></td></tr>
+            <tr id="row-cod" style="display:none; color:#e65100;"><td>COD Charges</td><td class="value-col">₹<span id="r_cod">0.00</span></td></tr>
+            <tr id="row-taxable" style="display:none;"><td>Taxable Amount</td><td class="value-col">₹<span id="r_taxable">0.00</span></td></tr>
+            <tr><td>GST (18%)</td><td class="value-col">₹<span id="r_gst">0.00</span></td></tr>
+        </table>
+        
+        <div class="final-amount-box">
+            <span class="final-amount">₹<span id="r_total">0.00</span></span>
+            <div class="final-label">Total Payable Amount</div>
+        </div>
+
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe6gkj7UnIE_HxAXCi_OW7jlh19FUXeJT40kYDEztJjsabBjw/viewform?entry.1638532792" target="_blank" id="btnBook" class="btn-book">
+            🚀 BOOK NOW
+        </a>
+    </div>
+
+    <div class="brand-footer">
+        © 2024 IDR Solutions. All rights reserved.
+    </div>
+</div>
+
+<a href="https://wa.me/917440305103?text=Hi%20IDR%20Solutions,%20I%20want%20to%20inquire%20about%20shipping%20rates." class="whatsapp-float" target="_blank">
+    <svg class="whatsapp-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="#ffffff" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+    <span class="whatsapp-text">Chat Now</span>
+</a>
+
+<script>
+    const BASE_URL = "/api"; 
+
+    function toggleCod() {
+        const isCod = document.querySelector('input[name="payMode"][value="COD"]').checked;
+        document.getElementById("cod-box-wrapper").style.display = isCod ? "block" : "none";
+        if (!isCod) document.getElementById("codAmount").value = "";
+    }
+
+    function calculateVolumetric() {
+        const act = parseFloat(document.getElementById("weight").value) || 0;
+        const l = parseFloat(document.getElementById("len").value) || 0;
+        const w = parseFloat(document.getElementById("wid").value) || 0;
+        const h = parseFloat(document.getElementById("ht").value) || 0;
+        let vol = (l * w * h) / 5;
+        vol = Math.round(vol);
+        const chg = Math.max(act, vol);
+        document.getElementById("act_weight_disp").innerText = act;
+        document.getElementById("v_weight_disp").innerText = vol;
+        document.getElementById("final_weight_disp").innerText = chg;
+        document.getElementById("vol-info").style.display = (l > 0 || w > 0 || h > 0) ? "block" : "none";
+    }
+
+    function handlePickupInput() {
+        validatePin('p_pin', 'pickup');
+        if (document.getElementById("d_pin").value.length === 6) validatePin('d_pin', 'delivery');
+    }
+
+    async function validatePin(elementId, type) {
+        const input = document.getElementById(elementId);
+        const dot = document.getElementById(elementId + "_dot");
+        const msg = document.getElementById(elementId + "_msg");
+        const pincode = input.value;
+
+        if (pincode.length !== 6) {
+            input.classList.remove("input-error", "input-success");
+            dot.className = "status-indicator"; msg.style.display = "none";
+            return;
+        }
+        dot.className = "status-indicator status-loading"; msg.style.display = "block"; msg.innerText = "Checking...";
+        msg.className = "msg-text loading-msg";
+        let relatedPin = (type === 'delivery') ? document.getElementById("p_pin").value : "";
+
+        try {
+            const res = await fetch(`${BASE_URL}/check-pincode?pincode=${pincode}&type=${type}&relatedPin=${relatedPin}`);
+            const data = await res.json();
+            if (data.success && data.isServiceable) {
+                input.classList.add("input-success"); input.classList.remove("input-error");
+                dot.className = "status-indicator status-green"; msg.className = "msg-text success-msg"; msg.innerText = data.message;
+            } else {
+                input.classList.add("input-error"); input.classList.remove("input-success");
+                dot.className = "status-indicator status-red"; msg.className = "msg-text err-msg"; msg.innerText = data.message;
+            }
+        } catch (e) { msg.innerText = "Network Error"; }
+    }
+
+    async function getRates() {
+        if (document.querySelectorAll('.input-error').length > 0) { alert("Please fix the Pincode errors."); return; }
+        const pPin = document.getElementById("p_pin").value;
+        const dPin = document.getElementById("d_pin").value;
+        const mode = document.querySelector('input[name="payMode"]:checked').value;
+        
+        const btn = document.getElementById("calcBtn");
+        const resultBox = document.getElementById("result-box");
+        const btnBook = document.getElementById("btnBook");
+
+        btn.innerText = "Calculating..."; btn.disabled = true; 
+        resultBox.style.display = "none";
+        btnBook.style.display = "none";
+
+        const payload = {
+            pickupPincode: pPin,
+            deliveryPincode: dPin,
+            weight: document.getElementById("final_weight_disp").innerText,
+            paymentMode: mode,
+            codAmount: document.getElementById("codAmount").value
+        };
+
+        try {
+            const res = await fetch(`${BASE_URL}/get-rate`, { method: "POST", body: JSON.stringify(payload) });
+            const data = await res.json();
+
+            if(data.success) {
+                document.getElementById("r_total").innerText = data.rate;
+                document.getElementById("r_freight").innerText = data.freight;
+                document.getElementById("r_gst").innerText = data.gst;
+
+                const rowCod = document.getElementById("row-cod");
+                const rowTaxable = document.getElementById("row-taxable");
+                
+                if (mode === 'COD') {
+                    document.getElementById("r_cod").innerText = data.cod_charges;
+                    document.getElementById("r_taxable").innerText = data.taxable_amount;
+                    rowCod.style.display = "table-row";
+                    rowTaxable.style.display = "table-row";
+                } else {
+                    rowCod.style.display = "none";
+                    rowTaxable.style.display = "none";
+                }
+                
+                resultBox.style.display = "block";
+                btnBook.style.display = "block"; 
+            } else {
+                alert("Error: " + data.message);
+            }
+        } catch(e) { alert("API Error"); }
+        btn.innerText = "Calculate Rate"; btn.disabled = false;
+    }
+</script>
+
+</body>
+</html>
