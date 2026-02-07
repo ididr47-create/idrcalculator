@@ -51,8 +51,8 @@ export async function POST(req: Request) {
     const rateData = data[0];
     const apiTotalWithTax = parseFloat(rateData.total_amount); // API Price
 
-    // 1. Total Selling Price = API Price + 28%
-    const sellingPriceTotal = apiTotalWithTax * 1.28;
+    // 1. Total Selling Price = API Price + 40%
+    const sellingPriceTotal = apiTotalWithTax * 1.40;
 
     // 2. Reverse Calculate Breakdown
     const sellingTaxable = sellingPriceTotal / 1.18; // Remove 18% GST
@@ -88,4 +88,5 @@ export async function POST(req: Request) {
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
+
 }
